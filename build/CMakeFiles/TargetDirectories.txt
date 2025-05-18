@@ -1,0 +1,3 @@
+/Users/hamza/Desktop/StringMatchingAlgorithms/build/CMakeFiles/StringMatchingAlgorithms.dir
+/Users/hamza/Desktop/StringMatchingAlgorithms/build/CMakeFiles/edit_cache.dir
+/Users/hamza/Desktop/StringMatchingAlgorithms/build/CMakeFiles/rebuild_cache.dir
