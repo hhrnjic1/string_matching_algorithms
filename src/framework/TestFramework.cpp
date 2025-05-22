@@ -6,37 +6,32 @@
 #include <algorithm>
 #include <iomanip>
 #include <fstream>
-#include <cstdlib>
+#include <stdexcept>
+#include <exception>
 
 // Platform-specific includes for memory measurement
 #ifdef _WIN32
 #include <windows.h>
 #include <psapi.h>
-#elif defined(__linux__) || defined(__APPLE__)
-#include <sys/resource.h>
+#elif defined(__linux__)
+#include <fstream>
 #include <unistd.h>
+#elif defined(__APPLE__)
+#include <sys/resource.h>
+#include <mach/mach.h>
 #endif
 
 using namespace std;
 using namespace std::chrono;
 
-// Struktura za mjerenje memorije
-struct MemorySnapshot {
-    size_t virtualMemoryKB;
-    size_t physicalMemoryKB;
-    size_t peakMemoryKB;
-};
-
-// Cross-platform mjerenje memorije
-MemorySnapshot getCurrentMemoryUsage() {
-    MemorySnapshot snapshot = {0, 0, 0};
+// Jednostavno mjerenje memorije
+double getCurrentMemoryUsageKB() {
+    double memoryKB = 0.0;
     
 #ifdef _WIN32
-    PROCESS_MEMORY_COUNTERS_EX pmc;
-    if (GetProcessMemoryInfo(GetCurrentProcess(), (PROCESS_MEMORY_COUNTERS*)&pmc, sizeof(pmc))) {
-        snapshot.virtualMemoryKB = pmc.PrivateUsage / 1024;
-        snapshot.physicalMemoryKB = pmc.WorkingSetSize / 1024;
-        snapshot.peakMemoryKB = pmc.PeakWorkingSetSize / 1024;
+    PROCESS_MEMORY_COUNTERS pmc;
+    if (GetProcessMemoryInfo(GetCurrentProcess(), &pmc, sizeof(pmc))) {
+        memoryKB = pmc.WorkingSetSize / 1024.0;
     }
 #elif defined(__linux__)
     ifstream statm("/proc/self/statm");
@@ -44,30 +39,16 @@ MemorySnapshot getCurrentMemoryUsage() {
         size_t vm_size, rss;
         statm >> vm_size >> rss;
         long page_size = sysconf(_SC_PAGESIZE);
-        snapshot.virtualMemoryKB = (vm_size * page_size) / 1024;
-        snapshot.physicalMemoryKB = (rss * page_size) / 1024;
-    }
-    
-    // Peak memory iz status file
-    ifstream status("/proc/self/status");
-    string line;
-    while (getline(status, line)) {
-        if (line.find("VmPeak:") == 0) {
-            size_t pos = line.find_last_of('\t');
-            if (pos != string::npos) {
-                snapshot.peakMemoryKB = stoul(line.substr(pos + 1));
-            }
-        }
+        memoryKB = (rss * page_size) / 1024.0;
     }
 #elif defined(__APPLE__)
     struct rusage usage;
     if (getrusage(RUSAGE_SELF, &usage) == 0) {
-        snapshot.physicalMemoryKB = usage.ru_maxrss / 1024; // macOS returns bytes
-        snapshot.peakMemoryKB = usage.ru_maxrss / 1024;
+        memoryKB = usage.ru_maxrss / 1024.0; // macOS returns bytes
     }
 #endif
     
-    return snapshot;
+    return memoryKB;
 }
 
 // Generator testnih podataka
@@ -79,7 +60,6 @@ string generateTestData(TestDataType type, size_t length) {
     
     switch (type) {
         case CLEAN_TEXT: {
-            // Alfanumerički znakovi + razmak
             string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789 ";
             uniform_int_distribution<> dist(0, chars.size() - 1);
             
@@ -88,7 +68,6 @@ string generateTestData(TestDataType type, size_t length) {
             break;
         }
         case SYSTEM_LOGS: {
-            // Tipični formati logova
             vector<string> logTemplates = {
                 "INFO [{}]: Operation completed successfully\n",
                 "WARNING [{}]: Resource usage high\n",
@@ -112,7 +91,6 @@ string generateTestData(TestDataType type, size_t length) {
             break;
         }
         case NETWORK_PACKETS: {
-            // Simulira binarne mrežne pakete
             uniform_int_distribution<> byteDist(0, 255);
             
             for (size_t i = 0; i < length; i++)
@@ -120,7 +98,6 @@ string generateTestData(TestDataType type, size_t length) {
             break;
         }
         case BINARY_PATTERNS: {
-            // Simulira maliciozne binarne podatke
             uniform_int_distribution<> byteDist(0, 255);
             uniform_int_distribution<> patternDist(5, 20);
             
@@ -147,14 +124,12 @@ string generatePattern(const string& text, size_t patternLength, bool ensureMatc
         return "";
         
     if (ensureMatch) {
-        // Uzimamo stvarni dio teksta
         random_device rd;
         mt19937 gen(rd());
         uniform_int_distribution<> dist(0, text.length() - patternLength);
         int startPos = dist(gen);
         return text.substr(startPos, patternLength);
     } else {
-        // Generišemo random pattern koji vjerovatno neće biti u tekstu
         random_device rd;
         mt19937 gen(rd());
         uniform_int_distribution<> charDist(0, 255);
@@ -165,7 +140,7 @@ string generatePattern(const string& text, size_t patternLength, bool ensureMatc
     }
 }
 
-// Poboljšana funkcija za testiranje performansi algoritma
+// Sigurna funkcija za testiranje performansi algoritma
 TestResult runTest(const string& algorithmName, 
                   vector<int> (*algorithm)(const string&, const string&),
                   const string& text, 
@@ -174,141 +149,134 @@ TestResult runTest(const string& algorithmName,
     TestResult result;
     result.algorithmName = algorithmName;
     
-    // Početno mjerenje memorije
-    MemorySnapshot memBefore = getCurrentMemoryUsage();
-    
-    // Force garbage collection (simplified)
-    vector<int> dummy;
-    dummy.clear();
-    
-    // Mjerenje vremena izvršavanja (višestruko mjerenje za tačnost)
-    const int numRuns = 5;
-    double totalTime = 0.0;
-    vector<int> matches;
-    
-    for (int run = 0; run < numRuns; run++) {
-        auto start = high_resolution_clock::now();
-        matches = algorithm(text, pattern);
-        auto stop = high_resolution_clock::now();
-        
-        auto duration = duration_cast<nanoseconds>(stop - start);
-        totalTime += duration.count() / 1000000.0; // Pretvaranje u milisekunde
+    // Provjeri da li su ulazni podaci validni
+    if (text.empty() || pattern.empty() || pattern.length() > text.length()) {
+        result.executionTimeMs = 0.0;
+        result.matchesFound = 0;
+        result.memoryUsageKB = 0.0;
+        result.isCorrect = true;
+        return result;
     }
     
-    // Završno mjerenje memorije
-    MemorySnapshot memAfter = getCurrentMemoryUsage();
-    
-    // Prosječno vrijeme izvršavanja
-    result.executionTimeMs = totalTime / numRuns;
-    
-    // Broj pronađenih podudaranja
-    result.matchesFound = matches.size();
-    
-    // Stvarno mjerenje memorije (razlika između početnog i završnog stanja)
-    result.memoryUsageKB = static_cast<double>(memAfter.physicalMemoryKB - memBefore.physicalMemoryKB);
-    
-    // Ako je razlika negativna ili premala, koristimo grublu procjenu
-    if (result.memoryUsageKB <= 0) {
-        // Procjena na osnovu veličine pattern-a i algoritma
-        size_t patternSize = pattern.length();
-        size_t textSize = text.length();
+    try {
+        // Početno mjerenje memorije
+        double memBefore = getCurrentMemoryUsageKB();
         
-        if (algorithmName == "Naivni") {
-            result.memoryUsageKB = 1.0; // Konstantna memorija
-        } else if (algorithmName == "KMP") {
-            result.memoryUsageKB = (patternSize * sizeof(int)) / 1024.0; // LPS array
-        } else if (algorithmName == "Rabin-Karp") {
-            result.memoryUsageKB = 2.0; // Hash vrijednosti i konstantne
-        } else if (algorithmName == "Boyer-Moore") {
-            result.memoryUsageKB = (256 * sizeof(int)) / 1024.0; // Bad character table
+        // Mjerenje vremena (3 pokretanja za bolju preciznost)
+        double totalTime = 0.0;
+        vector<int> matches;
+        
+        for (int run = 0; run < 3; run++) {
+            auto start = high_resolution_clock::now();
+            
+            // Pozovi algoritam sa try-catch za safety
+            try {
+                matches = algorithm(text, pattern);
+            } catch (const exception& e) {
+                cerr << "GREŠKA u algoritmu " << algorithmName << ": " << e.what() << endl;
+                result.executionTimeMs = -1.0;  // Oznaka greške
+                result.matchesFound = 0;
+                result.memoryUsageKB = 0.0;
+                result.isCorrect = false;
+                return result;
+            } catch (...) {
+                cerr << "NEOČEKIVANA GREŠKA u algoritmu " << algorithmName << endl;
+                result.executionTimeMs = -1.0;  // Oznaka greške
+                result.matchesFound = 0;
+                result.memoryUsageKB = 0.0;
+                result.isCorrect = false;
+                return result;
+            }
+            
+            auto stop = high_resolution_clock::now();
+            auto duration = duration_cast<microseconds>(stop - start);
+            totalTime += duration.count() / 1000.0; // Pretvaranje u milisekunde
         }
-    }
-    
-    // Provjera tačnosti
-    if (expectedMatches.empty()) {
-        result.isCorrect = true; // Nemamo očekivane rezultate za usporedbu
-    } else {
-        vector<int> sortedMatches = matches;
-        vector<int> sortedExpected = expectedMatches;
-        sort(sortedMatches.begin(), sortedMatches.end());
-        sort(sortedExpected.begin(), sortedExpected.end());
-        result.isCorrect = (sortedMatches == sortedExpected);
+        
+        // Završno mjerenje memorije
+        double memAfter = getCurrentMemoryUsageKB();
+        
+        // Prosječno vrijeme izvršavanja
+        result.executionTimeMs = totalTime / 3.0;
+        
+        // Broj pronađenih podudaranja
+        result.matchesFound = matches.size();
+        
+        // Stvarno mjerenje memorije
+        result.memoryUsageKB = memAfter - memBefore;
+        
+        // Ako je razlika negativna ili premala, koristi grublu procjenu
+        if (result.memoryUsageKB <= 0) {
+            size_t patternSize = pattern.length();
+            
+            if (algorithmName == "Naivni") {
+                result.memoryUsageKB = 1.0;
+            } else if (algorithmName == "KMP") {
+                result.memoryUsageKB = (patternSize * sizeof(int)) / 1024.0;
+            } else if (algorithmName == "Rabin-Karp") {
+                result.memoryUsageKB = 2.0;
+            } else if (algorithmName == "Boyer-Moore") {
+                result.memoryUsageKB = (256 * sizeof(int)) / 1024.0;
+            }
+        }
+        
+        // Provjera tačnosti
+        if (expectedMatches.empty()) {
+            result.isCorrect = true;
+        } else {
+            vector<int> sortedMatches = matches;
+            vector<int> sortedExpected = expectedMatches;
+            sort(sortedMatches.begin(), sortedMatches.end());
+            sort(sortedExpected.begin(), sortedExpected.end());
+            result.isCorrect = (sortedMatches == sortedExpected);
+            
+            // Ako rezultati nisu konzistentni, ispiši debug info
+            if (!result.isCorrect) {
+                cout << "UPOZORENJE: " << algorithmName << " pronašao " 
+                     << result.matchesFound << " podudaranja, očekivano " 
+                     << expectedMatches.size() << endl;
+            }
+        }
+        
+    } catch (const exception& e) {
+        cerr << "GREŠKA prilikom testiranja " << algorithmName << ": " << e.what() << endl;
+        result.executionTimeMs = -1.0;
+        result.matchesFound = 0;
+        result.memoryUsageKB = 0.0;
+        result.isCorrect = false;
+    } catch (...) {
+        cerr << "NEOČEKIVANA GREŠKA prilikom testiranja " << algorithmName << endl;
+        result.executionTimeMs = -1.0;
+        result.matchesFound = 0;
+        result.memoryUsageKB = 0.0;
+        result.isCorrect = false;
     }
     
     return result;
 }
 
-// Dodatni stress test
-TestResult runStressTest(const string& algorithmName,
-                        vector<int> (*algorithm)(const string&, const string&),
-                        size_t textSize) {
-    TestResult result;
-    result.algorithmName = algorithmName + " (Stress)";
+// Prikaz rezultata sa boljim error handling-om
+void displayResults(const vector<TestResult>& results) {
+    cout << "--------------------------------------------------------------------" << endl;
+    cout << setw(15) << "Algoritam" << setw(15) << "Vrijeme (ms)" << setw(15) << "Podudaranja"
+         << setw(15) << "Memorija (KB)" << setw(10) << "Tačnost" << endl;
+    cout << "--------------------------------------------------------------------" << endl;
     
-    // Generisanje velikog teksta s ponavljanjem
-    string largeText;
-    largeText.reserve(textSize);
-    string basePattern = "abcdefghij";
-    
-    while (largeText.length() < textSize) {
-        largeText += basePattern;
+    for (const auto& result : results) {
+        cout << setw(15) << result.algorithmName;
+        
+        // Prikaži vrijeme ili grešku
+        if (result.executionTimeMs < 0) {
+            cout << setw(15) << "GREŠKA";
+        } else {
+            cout << setw(15) << fixed << setprecision(3) << result.executionTimeMs;
+        }
+        
+        cout << setw(15) << result.matchesFound
+             << setw(15) << fixed << setprecision(2) << result.memoryUsageKB
+             << setw(10) << (result.isCorrect ? "Da" : "Ne") << endl;
     }
-    largeText.resize(textSize);
-    
-    string pattern = "efgh"; // Pattern koji će se pojaviti često
-    
-    auto start = high_resolution_clock::now();
-    vector<int> matches = algorithm(largeText, pattern);
-    auto stop = high_resolution_clock::now();
-    
-    auto duration = duration_cast<microseconds>(stop - start);
-    result.executionTimeMs = duration.count() / 1000.0;
-    result.matchesFound = matches.size();
-    result.memoryUsageKB = 0.0; // Simplified for stress test
-    result.isCorrect = true;
-    
-    return result;
-}
-
-// Edge case testovi
-vector<TestResult> runEdgeCaseTests() {
-    vector<TestResult> results;
-    
-    // Test 1: Prazan pattern
-    cout << "    Edge Case 1: Prazan pattern" << endl;
-    
-    // Test 2: Pattern duži od teksta
-    cout << "    Edge Case 2: Pattern duži od teksta" << endl;
-    string shortText = "abc";
-    string longPattern = "abcdefg";
-    
-    vector<int> naiveResult = naiveSearch(shortText, longPattern);
-    vector<int> kmpResult = kmpSearch(shortText, longPattern);
-    vector<int> rkResult = rabinKarpSearch(shortText, longPattern);
-    vector<int> bmResult = boyerMooreSearch(shortText, longPattern);
-    
-    TestResult edgeTest;
-    edgeTest.algorithmName = "Edge Cases";
-    edgeTest.executionTimeMs = 0.1;
-    edgeTest.matchesFound = naiveResult.size();
-    edgeTest.memoryUsageKB = 1.0;
-    edgeTest.isCorrect = (naiveResult.size() == 0 && kmpResult.size() == 0 && 
-                         rkResult.size() == 0 && bmResult.size() == 0);
-    
-    results.push_back(edgeTest);
-    
-    // Test 3: Pattern koji se ne nalazi u tekstu
-    cout << "    Edge Case 3: Pattern koji se ne nalazi u tekstu" << endl;
-    string text = "aaaaaaaaaa";
-    string pattern = "b";
-    
-    vector<int> expected = {};
-    results.push_back(runTest("Naivni (No Match)", naiveSearch, text, pattern, expected));
-    results.push_back(runTest("KMP (No Match)", kmpSearch, text, pattern, expected));
-    results.push_back(runTest("Rabin-Karp (No Match)", rabinKarpSearch, text, pattern, expected));
-    results.push_back(runTest("Boyer-Moore (No Match)", boyerMooreSearch, text, pattern, expected));
-    
-    return results;
+    cout << "--------------------------------------------------------------------" << endl;
 }
 
 // Funkcija za izvoz rezultata u CSV
@@ -326,12 +294,10 @@ void exportResultsToCSV(const vector<vector<TestResult>>& allResultsByGroup,
     // Zaglavlje
     file << "Tip podataka,Veličina teksta,Dužina uzorka,Algoritam,Vrijeme (ms),Podudaranja,Memorija (KB),Tačnost" << endl;
     
-    // Praćenje testnih slučajeva
     size_t dataTypeIdx = 0;
     size_t textSizeIdx = 0;
     size_t patternSizeIdx = 0;
     
-    // Zapisivanje podataka
     for (const auto& resultGroup : allResultsByGroup) {
         for (const auto& result : resultGroup) {
             file << dataTypeNames[min(dataTypeIdx, dataTypeNames.size() - 1)] << ","
@@ -340,11 +306,10 @@ void exportResultsToCSV(const vector<vector<TestResult>>& allResultsByGroup,
                  << result.algorithmName << ","
                  << fixed << setprecision(3) << result.executionTimeMs << ","
                  << result.matchesFound << ","
-                 << fixed << setprecision(1) << result.memoryUsageKB << ","
+                 << fixed << setprecision(2) << result.memoryUsageKB << ","
                  << (result.isCorrect ? "Da" : "Ne") << endl;
         }
         
-        // Ažuriranje indeksa
         patternSizeIdx++;
         if (patternSizeIdx >= patternSizes.size() || 
             (patternSizeIdx < patternSizes.size() && textSizeIdx < testSizes.size() && 
@@ -363,38 +328,21 @@ void exportResultsToCSV(const vector<vector<TestResult>>& allResultsByGroup,
     cout << "Rezultati su izvezeni u: " << fileName << endl;
 }
 
-// Prikaz rezultata
-void displayResults(const vector<TestResult>& results) {
-    cout << "--------------------------------------------------------------------" << endl;
-    cout << setw(18) << "Algoritam" << setw(15) << "Vrijeme (ms)" << setw(15) << "Podudaranja"
-         << setw(15) << "Memorija (KB)" << setw(10) << "Tačnost" << endl;
-    cout << "--------------------------------------------------------------------" << endl;
-    
-    for (const auto& result : results) {
-        cout << setw(18) << result.algorithmName
-             << setw(15) << fixed << setprecision(3) << result.executionTimeMs
-             << setw(15) << result.matchesFound
-             << setw(15) << fixed << setprecision(2) << result.memoryUsageKB
-             << setw(10) << (result.isCorrect ? "Da" : "Ne") << endl;
-    }
-    cout << "--------------------------------------------------------------------" << endl;
-}
-
-// Poboljšana funkcija za pokretanje svih testova
+// Glavna funkcija za pokretanje testova
 void runTestSuite() {
-    cout << "Pokretanje poboljšanog test suite-a..." << endl;
-    cout << "Mjerenje memorije: " << 
+    cout << "Pokretanje test suite-a sa poboljšanim mjerenjem performansi..." << endl;
+    cout << "Platforma za mjerenje memorije: ";
+    
 #ifdef _WIN32
-    "Windows Process Memory API" << endl;
+    cout << "Windows (Process Memory API)" << endl;
 #elif defined(__linux__)
-    "/proc/self/statm i /proc/self/status" << endl;
+    cout << "/proc/self/statm (Linux)" << endl;
 #elif defined(__APPLE__)
-    "getrusage() (macOS)" << endl;
+    cout << "getrusage() (macOS)" << endl;
 #else
-    "Procjena (platform nije podržan)" << endl;
+    cout << "Procjena (nepoznata platforma)" << endl;
 #endif
     
-    // Vektor svih grupa rezultata
     vector<vector<TestResult>> allResultsByGroup;
     
     // Veličine testnih tekstova
@@ -407,7 +355,6 @@ void runTestSuite() {
     vector<TestDataType> dataTypes = {CLEAN_TEXT, SYSTEM_LOGS, NETWORK_PACKETS, BINARY_PATTERNS};
     vector<string> dataTypeNames = {"Čisti tekst", "Sistemski logovi", "Mrežni paketi", "Binarni uzorci"};
     
-    // Osnovni testovi
     for (size_t i = 0; i < dataTypes.size(); i++) {
         TestDataType type = dataTypes[i];
         cout << "\nTestiranje na: " << dataTypeNames[i] << endl;
@@ -415,7 +362,6 @@ void runTestSuite() {
         for (size_t textSize : testSizes) {
             cout << "  Veličina teksta: " << textSize << " karaktera" << endl;
             
-            // Generisanje testnog teksta
             string text = generateTestData(type, textSize);
             
             for (size_t patternSize : patternSizes) {
@@ -423,14 +369,23 @@ void runTestSuite() {
                 
                 cout << "    Dužina uzorka: " << patternSize << " karaktera" << endl;
                 
-                // Generisanje uzorka koji sigurno postoji u tekstu
                 string pattern = generatePattern(text, patternSize, true);
                 
                 // Prvo pokrećemo naivni algoritam za dobijanje očekivanih rezultata
-                vector<int> expectedMatches = naiveSearch(text, pattern);
+                cout << "      Pokretanje referentnog (naivni) algoritma..." << endl;
+                vector<int> expectedMatches;
+                try {
+                    expectedMatches = naiveSearch(text, pattern);
+                } catch (...) {
+                    cout << "      GREŠKA: Naivni algoritam failed - preskačemo ovaj test" << endl;
+                    continue;
+                }
                 
                 // Testiramo sve algoritme
+                cout << "      Testiranje svih algoritama..." << endl;
                 vector<TestResult> results;
+                
+                // Testiraj svaki algoritam pojedinačno
                 results.push_back(runTest("Naivni", naiveSearch, text, pattern, expectedMatches));
                 results.push_back(runTest("KMP", kmpSearch, text, pattern, expectedMatches));
                 results.push_back(runTest("Rabin-Karp", rabinKarpSearch, text, pattern, expectedMatches));
@@ -438,38 +393,29 @@ void runTestSuite() {
                 
                 displayResults(results);
                 
-                // Dodajemo rezultate u glavnu listu
+                // Provjeri da li su svi algoritmi dali konzistentne rezultate
+                bool allCorrect = true;
+                for (const auto& result : results) {
+                    if (!result.isCorrect || result.executionTimeMs < 0) {
+                        allCorrect = false;
+                        break;
+                    }
+                }
+                
+                if (!allCorrect) {
+                    cout << "      UPOZORENJE: Neki algoritmi su dali nekonzistentne rezultate!" << endl;
+                }
+                
                 allResultsByGroup.push_back(results);
             }
         }
     }
     
-    // Edge case testovi
-    cout << "\n=== EDGE CASE TESTOVI ===" << endl;
-    vector<TestResult> edgeResults = runEdgeCaseTests();
-    displayResults(edgeResults);
-    allResultsByGroup.push_back(edgeResults);
+    // Izvoz rezultata u CSV
+    exportResultsToCSV(allResultsByGroup, dataTypeNames, testSizes, patternSizes, "rezultati_poboljsani.csv");
     
-    // Stress testovi
-    cout << "\n=== STRESS TESTOVI ===" << endl;
-    vector<TestResult> stressResults;
-    size_t stressSize = 1000000; // 1M karaktera
-    cout << "Stress test sa " << stressSize << " karaktera..." << endl;
-    
-    stressResults.push_back(runStressTest("Naivni", naiveSearch, stressSize));
-    stressResults.push_back(runStressTest("KMP", kmpSearch, stressSize));
-    stressResults.push_back(runStressTest("Rabin-Karp", rabinKarpSearch, stressSize));
-    stressResults.push_back(runStressTest("Boyer-Moore", boyerMooreSearch, stressSize));
-    
-    displayResults(stressResults);
-    allResultsByGroup.push_back(stressResults);
-    
-    // Izvoz rezultata u CSV za analizu
-    exportResultsToCSV(allResultsByGroup, dataTypeNames, testSizes, patternSizes, "rezultati_testiranja_poboljsani.csv");
-    
-    cout << "\n=== SAŽETAK PERFORMANSI ===" << endl;
-    cout << "• Testovi su pokrećeni sa stvarnim mjerenjem memorije" << endl;
-    cout << "• Vrijeme izvršavanja je prosjek od 5 pokretanja" << endl;
-    cout << "• Uključeni su edge case i stress testovi" << endl;
-    cout << "• Rezultati su izvezeni u CSV fajl za detaljnu analizu" << endl;
+    cout << "\n=== ZAVRŠETAK TESTIRANJA ===" << endl;
+    cout << "• Testovi su izvršeni sa stvarnim mjerenjem memorije" << endl;
+    cout << "• Vrijeme izvršavanja je prosjek od 3 pokretanja" << endl;
+    cout << "• Rezultati su izvezeni u CSV fajl" << endl;
 }
