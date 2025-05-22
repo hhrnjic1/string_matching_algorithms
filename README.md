@@ -109,7 +109,3 @@ From the test results, we can observe that:
 2. **Rabin-Karp** is effective for multiple pattern matching scenarios
 3. **KMP** offers stable performance regardless of pattern distribution
 4. **Naive** algorithm's performance degrades significantly with larger texts
-
-## License
-
-This project is available under the MIT License. See the LICENSE file for details.
