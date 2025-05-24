@@ -1,4 +1,8 @@
 /Users/hamza/Desktop/StringMatchingAlgorithms/build/CMakeFiles/StringMatchingAlgorithms.dir
 /Users/hamza/Desktop/StringMatchingAlgorithms/build/CMakeFiles/run.dir
+/Users/hamza/Desktop/StringMatchingAlgorithms/build/CMakeFiles/run-cache-experiment.dir
+/Users/hamza/Desktop/StringMatchingAlgorithms/build/CMakeFiles/clean-results.dir
+/Users/hamza/Desktop/StringMatchingAlgorithms/build/CMakeFiles/analyze-results.dir
+/Users/hamza/Desktop/StringMatchingAlgorithms/build/CMakeFiles/test.dir
 /Users/hamza/Desktop/StringMatchingAlgorithms/build/CMakeFiles/edit_cache.dir
 /Users/hamza/Desktop/StringMatchingAlgorithms/build/CMakeFiles/rebuild_cache.dir

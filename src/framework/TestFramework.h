@@ -12,13 +12,32 @@ enum TestDataType {
     BINARY_PATTERNS  // Maliciozni binarni uzorci
 };
 
-// Struktura za čuvanje rezultata testa
+// Struktura za hardware performance counters
+struct CacheMetrics {
+    uint64_t l1_cache_misses;
+    uint64_t l2_cache_misses;
+    uint64_t l3_cache_misses;
+    uint64_t instructions;
+    uint64_t cycles;
+    uint64_t cache_references;
+    double cache_miss_rate;
+    bool measurementAvailable;
+    
+    CacheMetrics() : l1_cache_misses(0), l2_cache_misses(0), l3_cache_misses(0),
+                     instructions(0), cycles(0), cache_references(0), 
+                     cache_miss_rate(0.0), measurementAvailable(false) {}
+};
+
+// Proširena struktura za čuvanje rezultata testa
 struct TestResult {
     std::string algorithmName;  // Naziv algoritma
     double executionTimeMs;     // Vrijeme izvršavanja u milisekundama
     int matchesFound;           // Broj pronađenih podudaranja
     double memoryUsageKB;       // Potrošnja memorije u KB
     bool isCorrect;             // Da li je rezultat tačan
+    
+    // Cache performance metrics
+    CacheMetrics cacheMetrics;  // Hardware performance counters
     
     // Konstruktor
     TestResult() : algorithmName(""), executionTimeMs(0.0), 
@@ -52,6 +71,26 @@ void exportResultsToCSV(const std::vector<std::vector<TestResult>>& allResultsBy
                         const std::vector<size_t>& testSizes,
                         const std::vector<size_t>& patternSizes,
                         const std::string& fileName);
+
+// Funkcije za mjerenje cache performance
+CacheMetrics measureCachePerformance(std::vector<int> (*algorithm)(const std::string&, const std::string&),
+                                     const std::string& text, 
+                                     const std::string& pattern);
+
+// Cache experiment specific functions
+void runCacheExperiment();
+TestResult runCacheAwareTest(const std::string& algorithmName, 
+                            std::vector<int> (*algorithm)(const std::string&, const std::string&),
+                            const std::string& text, 
+                            const std::string& pattern,
+                            const std::vector<int>& expectedMatches = {});
+
+// Export functions with cache data
+void exportCacheResultsToCSV(const std::vector<std::vector<TestResult>>& allResultsByGroup, 
+                             const std::vector<std::string>& dataTypeNames,
+                             const std::vector<size_t>& testSizes,
+                             const std::vector<size_t>& patternSizes,
+                             const std::string& fileName);
 
 // Glavna funkcija test suite-a
 void runTestSuite();

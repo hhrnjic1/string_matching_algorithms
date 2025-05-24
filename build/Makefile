@@ -65,6 +65,16 @@ CMAKE_BINARY_DIR = /Users/hamza/Desktop/StringMatchingAlgorithms/build
 #=============================================================================
 # Targets provided globally by CMake.
 
+# Special rule for the target test
+test:
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --cyan "Running tests..."
+	/opt/homebrew/bin/ctest $(ARGS)
+.PHONY : test
+
+# Special rule for the target test
+test/fast: test
+.PHONY : test/fast
+
 # Special rule for the target edit_cache
 edit_cache:
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --cyan "Running CMake cache editor..."
@@ -141,6 +151,45 @@ run: cmake_check_build_system
 run/fast:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/run.dir/build.make CMakeFiles/run.dir/build
 .PHONY : run/fast
+
+#=============================================================================
+# Target rules for targets named run-cache-experiment
+
+# Build rule for target.
+run-cache-experiment: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 run-cache-experiment
+.PHONY : run-cache-experiment
+
+# fast build rule for target.
+run-cache-experiment/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/run-cache-experiment.dir/build.make CMakeFiles/run-cache-experiment.dir/build
+.PHONY : run-cache-experiment/fast
+
+#=============================================================================
+# Target rules for targets named clean-results
+
+# Build rule for target.
+clean-results: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 clean-results
+.PHONY : clean-results
+
+# fast build rule for target.
+clean-results/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/clean-results.dir/build.make CMakeFiles/clean-results.dir/build
+.PHONY : clean-results/fast
+
+#=============================================================================
+# Target rules for targets named analyze-results
+
+# Build rule for target.
+analyze-results: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 analyze-results
+.PHONY : analyze-results
+
+# fast build rule for target.
+analyze-results/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/analyze-results.dir/build.make CMakeFiles/analyze-results.dir/build
+.PHONY : analyze-results/fast
 
 src/algorithms/BoyerMoore.o: src/algorithms/BoyerMoore.cpp.o
 .PHONY : src/algorithms/BoyerMoore.o
@@ -294,7 +343,11 @@ help:
 	@echo "... depend"
 	@echo "... edit_cache"
 	@echo "... rebuild_cache"
+	@echo "... test"
+	@echo "... analyze-results"
+	@echo "... clean-results"
 	@echo "... run"
+	@echo "... run-cache-experiment"
 	@echo "... StringMatchingAlgorithms"
 	@echo "... src/algorithms/BoyerMoore.o"
 	@echo "... src/algorithms/BoyerMoore.i"

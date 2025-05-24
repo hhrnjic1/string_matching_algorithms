@@ -67,7 +67,7 @@ include CMakeFiles/run.dir/compiler_depend.make
 include CMakeFiles/run.dir/progress.make
 
 CMakeFiles/run: StringMatchingAlgorithms
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --blue --bold --progress-dir=/Users/hamza/Desktop/StringMatchingAlgorithms/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Running String Matching Algorithms test suite"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --blue --bold --progress-dir=/Users/hamza/Desktop/StringMatchingAlgorithms/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Running Enhanced String Matching Algorithms test suite"
 	/Users/hamza/Desktop/StringMatchingAlgorithms/build/StringMatchingAlgorithms
 
 CMakeFiles/run.dir/codegen:
