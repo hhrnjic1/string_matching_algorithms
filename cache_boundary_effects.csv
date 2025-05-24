@@ -1,0 +1,13 @@
+Text_Size_KB,Algorithm,Performance_Degradation_Percent,Cache_Miss_Increase_Percent,Efficiency_Drop,Cache_Boundary_Type
+32,Boyer-Moore,77.10,N/A,77.10,L1_Boundary
+64,Boyer-Moore,96.55,N/A,96.55,Cache_Transition
+1024,Boyer-Moore,105.78,N/A,105.78,Cache_Transition
+32,KMP,101.18,N/A,101.18,L1_Boundary
+64,KMP,106.22,N/A,106.22,Cache_Transition
+1024,KMP,100.51,N/A,100.51,Cache_Transition
+32,Naive,104.00,N/A,104.00,L1_Boundary
+64,Naive,107.32,N/A,107.32,Cache_Transition
+1024,Naive,100.38,N/A,100.38,Cache_Transition
+32,Rabin-Karp,70.92,N/A,70.92,L1_Boundary
+64,Rabin-Karp,105.18,N/A,105.18,Cache_Transition
+1024,Rabin-Karp,101.60,N/A,101.60,Cache_Transition

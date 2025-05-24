@@ -1,0 +1,201 @@
+Algorithm,Cache_Miss_Rate,Execution_Time_Ms,Text_Size_Category,Correlation_Group
+Naive,0.00000000,0.021000,Small,Standard
+KMP,0.00000000,0.060000,Small,Standard
+Rabin-Karp,0.00000000,0.020000,Small,Standard
+Boyer-Moore,0.00000000,0.012000,Small,Standard
+Naive,0.00000000,0.021000,Small,Standard
+KMP,0.00000000,0.037000,Small,Standard
+Rabin-Karp,0.00000000,0.019000,Small,Standard
+Boyer-Moore,0.00000000,0.005000,Small,Standard
+Naive,0.00000000,0.019000,Small,Standard
+KMP,0.00000000,0.034000,Small,Standard
+Rabin-Karp,0.00000000,0.019667,Small,Standard
+Boyer-Moore,0.00000000,0.005000,Small,Standard
+Naive,0.00000000,0.201000,Small,Standard
+KMP,0.00000000,0.359000,Small,Standard
+Rabin-Karp,0.00000000,0.192000,Small,Standard
+Boyer-Moore,0.00000000,0.172000,Small,Standard
+Naive,0.00000000,0.193000,Small,Standard
+KMP,0.00000000,0.372333,Small,Standard
+Rabin-Karp,0.00000000,0.184667,Small,Standard
+Boyer-Moore,0.00000000,0.025333,Small,Standard
+Naive,0.00000000,0.229333,Small,Standard
+KMP,0.00000000,0.342333,Small,Standard
+Rabin-Karp,0.00000000,0.185667,Small,Standard
+Boyer-Moore,0.00000000,0.016000,Small,Standard
+Naive,0.00318192,1.992333,Medium,Standard
+KMP,0.00172994,3.613333,Medium,Standard
+Rabin-Karp,0.00337397,1.893000,Medium,Standard
+Boyer-Moore,0.00707695,0.846000,Medium,Standard
+Naive,0.01261095,1.940333,Medium,Standard
+KMP,0.00688224,3.651333,Medium,Standard
+Rabin-Karp,0.01349697,1.865000,Medium,Standard
+Boyer-Moore,0.10702845,0.232333,Medium,Standard
+Naive,0.02716762,1.847000,Medium,Standard
+KMP,0.01422572,3.361667,Medium,Standard
+Rabin-Karp,0.02688396,1.867000,Medium,Standard
+Boyer-Moore,0.39613565,0.125667,Medium,Standard
+Naive,0.00000000,0.021000,Small,Standard
+KMP,0.00000000,0.037667,Small,Standard
+Rabin-Karp,0.00000000,0.020000,Small,Standard
+Boyer-Moore,0.00000000,0.014000,Small,Standard
+Naive,0.00000000,0.024000,Small,Standard
+KMP,0.00000000,0.039000,Small,Standard
+Rabin-Karp,0.00000000,0.022000,Small,Standard
+Boyer-Moore,0.00000000,0.008000,Small,Standard
+Naive,0.00000000,0.021000,Small,Standard
+KMP,0.00000000,0.035000,Small,Standard
+Rabin-Karp,0.00000000,0.020000,Small,Standard
+Boyer-Moore,0.00000000,0.007000,Small,Standard
+Naive,0.00000000,0.234667,Small,Standard
+KMP,0.00000000,0.398667,Small,Standard
+Rabin-Karp,0.00000000,0.196667,Small,Standard
+Boyer-Moore,0.00000000,0.105333,Small,Standard
+Naive,0.00000000,0.195000,Small,Standard
+KMP,0.00000000,0.390000,Small,Standard
+Rabin-Karp,0.00000000,0.185667,Small,Standard
+Boyer-Moore,0.00000000,0.030000,Small,Standard
+Naive,0.00000000,0.213000,Small,Standard
+KMP,0.00000000,0.342333,Small,Standard
+Rabin-Karp,0.00000000,0.192000,Small,Standard
+Boyer-Moore,0.00000000,0.020667,Small,Standard
+Naive,0.00293800,2.117333,Medium,Standard
+KMP,0.00169204,3.686333,Medium,Standard
+Rabin-Karp,0.00318847,1.952000,Medium,Standard
+Boyer-Moore,0.00717412,0.859000,Medium,Standard
+Naive,0.01215353,2.017333,Medium,Standard
+KMP,0.00684703,3.644000,Medium,Standard
+Rabin-Karp,0.01338481,1.844000,Medium,Standard
+Boyer-Moore,0.07774577,0.320000,Medium,Standard
+Naive,0.02580780,1.887667,Medium,Standard
+KMP,0.01455211,3.375000,Medium,Standard
+Rabin-Karp,0.02704232,1.856667,Medium,Standard
+Boyer-Moore,0.12707937,0.389000,Medium,Standard
+Naive,0.00000000,0.019000,Small,Standard
+KMP,0.00000000,0.036000,Small,Standard
+Rabin-Karp,0.00000000,0.019000,Small,Standard
+Boyer-Moore,0.00000000,0.011000,Small,Standard
+Naive,0.00000000,0.019000,Small,Standard
+KMP,0.00000000,0.036000,Small,Standard
+Rabin-Karp,0.00000000,0.019000,Small,Standard
+Boyer-Moore,0.00000000,0.005000,Small,Standard
+Naive,0.00000000,0.017667,Small,Standard
+KMP,0.00000000,0.034000,Small,Standard
+Rabin-Karp,0.00000000,0.019000,Small,Standard
+Boyer-Moore,0.00000000,0.004667,Small,Standard
+Naive,0.00000000,0.190333,Small,Standard
+KMP,0.00000000,0.365333,Small,Standard
+Rabin-Karp,0.00000000,0.244000,Small,Standard
+Boyer-Moore,0.00000000,0.082000,Small,Standard
+Naive,0.00000000,0.189333,Small,Standard
+KMP,0.00000000,0.369000,Small,Standard
+Rabin-Karp,0.00000000,0.194667,Small,Standard
+Boyer-Moore,0.00000000,0.024333,Small,Standard
+Naive,0.00000000,0.188000,Small,Standard
+KMP,0.00000000,0.334667,Small,Standard
+Rabin-Karp,0.00000000,0.187000,Small,Standard
+Boyer-Moore,0.00000000,0.015000,Small,Standard
+Naive,0.00322672,1.892667,Medium,Standard
+KMP,0.00172953,3.651333,Medium,Standard
+Rabin-Karp,0.00321826,2.075000,Medium,Standard
+Boyer-Moore,0.00750304,0.833000,Medium,Standard
+Naive,0.01209295,1.979000,Medium,Standard
+KMP,0.00686956,3.664000,Medium,Standard
+Rabin-Karp,0.01334520,1.892333,Medium,Standard
+Boyer-Moore,0.11891100,0.215333,Medium,Standard
+Naive,0.02722385,1.809333,Medium,Standard
+KMP,0.01492101,3.347000,Medium,Standard
+Rabin-Karp,0.02664328,1.884000,Medium,Standard
+Boyer-Moore,0.47889321,0.109000,Medium,Standard
+Naive,0.00000000,0.019000,Small,Standard
+KMP,0.00000000,0.036000,Small,Standard
+Rabin-Karp,0.00000000,0.019000,Small,Standard
+Boyer-Moore,0.00000000,0.011000,Small,Standard
+Naive,0.00000000,0.019000,Small,Standard
+KMP,0.00000000,0.036000,Small,Standard
+Rabin-Karp,0.00000000,0.019000,Small,Standard
+Boyer-Moore,0.00000000,0.005000,Small,Standard
+Naive,0.00000000,0.018000,Small,Standard
+KMP,0.00000000,0.034000,Small,Standard
+Rabin-Karp,0.00000000,0.019000,Small,Standard
+Boyer-Moore,0.00000000,0.004667,Small,Standard
+Naive,0.00000000,0.189667,Small,Standard
+KMP,0.00000000,0.371667,Small,Standard
+Rabin-Karp,0.00000000,0.192000,Small,Standard
+Boyer-Moore,0.00000000,0.083333,Small,Standard
+Naive,0.00000000,0.189667,Small,Standard
+KMP,0.00000000,0.367667,Small,Standard
+Rabin-Karp,0.00000000,0.199333,Small,Standard
+Boyer-Moore,0.00000000,0.024000,Small,Standard
+Naive,0.00000000,0.176000,Small,Standard
+KMP,0.00000000,0.358667,Small,Standard
+Rabin-Karp,0.00000000,0.188000,Small,Standard
+Boyer-Moore,0.00000000,0.014000,Small,Standard
+Naive,0.00319803,1.930000,Medium,Standard
+KMP,0.00166825,3.911333,Medium,Standard
+Rabin-Karp,0.00315611,1.953667,Medium,Standard
+Boyer-Moore,0.00763457,0.797667,Medium,Standard
+Naive,0.01275252,2.131000,Medium,Standard
+KMP,0.00686915,3.651000,Medium,Standard
+Rabin-Karp,0.01315418,1.871667,Medium,Standard
+Boyer-Moore,0.12081484,0.208000,Medium,Standard
+Naive,0.02727424,1.800667,Medium,Standard
+KMP,0.01490064,3.342667,Medium,Standard
+Rabin-Karp,0.02655534,1.872000,Medium,Standard
+Boyer-Moore,0.47513308,0.103000,Medium,Standard
+Naive,0.00000000,0.330667,Small,Cache Boundary
+KMP,0.00000000,0.600000,Small,Cache Boundary
+Rabin-Karp,0.00000000,0.307333,Small,Cache Boundary
+Boyer-Moore,0.00000000,0.140333,Small,Cache Boundary
+Naive,0.00000000,0.317000,Small,Cache Boundary
+KMP,0.00000000,0.593667,Small,Cache Boundary
+Rabin-Karp,0.00000000,0.357667,Small,Cache Boundary
+Boyer-Moore,0.00000000,0.043667,Small,Cache Boundary
+Naive,0.00000000,0.641667,Medium,Cache Boundary
+KMP,0.00000000,1.224333,Medium,Cache Boundary
+Rabin-Karp,0.00000000,0.625000,Medium,Cache Boundary
+Boyer-Moore,0.00000000,0.289667,Medium,Cache Boundary
+Naive,0.00000000,0.646667,Medium,Cache Boundary
+KMP,0.00000000,1.194333,Medium,Cache Boundary
+Rabin-Karp,0.00000000,0.611333,Medium,Cache Boundary
+Boyer-Moore,0.00000000,0.077333,Medium,Cache Boundary
+Naive,0.00000000,1.280333,Medium,Cache Boundary
+KMP,0.00000000,2.369333,Medium,Cache Boundary
+Rabin-Karp,0.00000000,1.215333,Medium,Cache Boundary
+Boyer-Moore,0.00000000,0.547000,Medium,Cache Boundary
+Naive,0.00000000,1.340667,Medium,Cache Boundary
+KMP,0.00000000,2.463000,Medium,Cache Boundary
+Rabin-Karp,0.00000000,1.254333,Medium,Cache Boundary
+Boyer-Moore,0.00000000,0.152000,Medium,Cache Boundary
+Naive,0.00305559,2.625333,Medium,Cache Boundary
+KMP,0.00152069,4.725000,Medium,Cache Boundary
+Rabin-Karp,0.00336782,2.449333,Medium,Cache Boundary
+Boyer-Moore,0.00749806,1.102667,Medium,Cache Boundary
+Naive,0.01268869,2.540333,Medium,Cache Boundary
+KMP,0.00694144,4.710667,Medium,Cache Boundary
+Rabin-Karp,0.01347597,2.431667,Medium,Cache Boundary
+Boyer-Moore,0.11227070,0.292333,Medium,Cache Boundary
+Naive,0.00323013,10.107000,Large,Cache Boundary
+KMP,0.00172271,18.859000,Large,Cache Boundary
+Rabin-Karp,0.00337280,9.724000,Large,Cache Boundary
+Boyer-Moore,0.00755218,4.335000,Large,Cache Boundary
+Naive,0.01278801,10.122000,Large,Cache Boundary
+KMP,0.00622168,18.889000,Large,Cache Boundary
+Rabin-Karp,0.01349358,9.721333,Large,Cache Boundary
+Boyer-Moore,0.11143806,1.176667,Large,Cache Boundary
+Naive,0.00316167,20.334667,Large,Cache Boundary
+KMP,0.00166584,37.897000,Large,Cache Boundary
+Rabin-Karp,0.00333935,20.049667,Large,Cache Boundary
+Boyer-Moore,0.00749690,8.698000,Large,Cache Boundary
+Naive,0.01277807,20.282667,Large,Cache Boundary
+KMP,0.00688135,37.874333,Large,Cache Boundary
+Rabin-Karp,0.01337880,19.598333,Large,Cache Boundary
+Boyer-Moore,0.10850910,2.421333,Large,Cache Boundary
+Naive,0.00317648,81.753000,Large,Cache Boundary
+KMP,0.00171643,153.719667,Large,Cache Boundary
+Rabin-Karp,0.00333144,84.014000,Large,Cache Boundary
+Boyer-Moore,0.00754279,34.722000,Large,Cache Boundary
+Naive,0.01289247,81.572667,Large,Cache Boundary
+KMP,0.00688903,152.335667,Large,Cache Boundary
+Rabin-Karp,0.01256159,77.993000,Large,Cache Boundary
+Boyer-Moore,0.10902920,9.562333,Large,Cache Boundary
